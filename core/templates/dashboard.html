@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load customtags %}
+{% block title %}Dashboard{% endblock title %}
+{% block content %}
+
+<div class="container-fluid dashboard">
+    <div class="row mb-4">
+        <div class="col-md-12 d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{% url 'create_service' %}" class="btn btn-secondary">Create Service</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-1">
+                <h3> Role-</h3>
+                <p class="">{{ request.user.customerregistration.role|title }}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-2">
+                {% if currentUser == 'customer' %}
+                <h3>Total Service-</h3>
+                <p class="">{{totalService}}</p>
+                {% elif currentUser == 'technician' %}
+                <h3>Completed-</h3>
+                <p class="">{{completed}}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            {% if currentUser == 'customer' %}
+            <div class="card card-3 {% if dueStatus %} card-danger {% endif %}">
+                <h3>Due-</h3>
+                <p class="">{{total}}</p>
+            </div>
+            {% elif currentUser == 'technician' %}
+            <div class="card card-3">
+                <h3>Remaining</h3>
+                <p class="">{{remaining}}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div> <br><br>
+
+    {% if currentUser == 'technician' %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-1">
+                <h3> Total Equipment Cost-</h3>
+                <p class="">{{equip_total_charge|stringformat:".2f"}}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-2">
+
+                <h3>Total Technician Charge-</h3>
+                <p class="">{{tech_total_charge|stringformat:".2f"}}</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-3">
+                <h3>Total-</h3>
+                <p class="">{{equip_total_charge|add2var:tech_total_charge|stringformat:".2f"}}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <br><br>
+
+
+
+    <h2 class="mb-4">Other Information</h2>
+    <hr>
+    <div class="card bg-light">
+        <div class="card-body">
+            <h5 class="card-title">Registration No: {{ request.user.customerregistration.reg_no }}</h5>
+            <p class="card-text">Account Type: {{ request.user.customerregistration.registration_type }} / Email:
+                {{ request.user.customerregistration.email}} / Phone: {{ request.user.customerregistration.phone }}
+            </p>
+            <a href=" {% url 'updateProfile' pk=request.user.customerregistration.id %}" class="btn btn-secondary">VIEW
+                MORE</a>
+        </div>
+    </div>
+    <br>
+</div>
+
+{% endblock content %}

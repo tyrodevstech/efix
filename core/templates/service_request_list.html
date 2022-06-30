@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load customtags %}
+{% block title %}Service Request List{% endblock title %}
+{% block content %}
+<div class="w-100">
+    <h2 class="mb-4">Service Request List</h2>
+    <hr>
+    <div class="card p-4 table-responsive">
+        <table id="table_data" class="table table-sm table-striped" style="width:100%">
+            <thead class="table-dark">
+                <tr>
+                    <th>Service No.</th>
+                    <th>Title</th>
+                    <th>priority</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in service_list %}
+                <tr>
+                    <td>{{ list.servicereq_no }}</td>
+                    <td>{{ list.title }}</td>
+                    <td>{{ list.priority }}</td>
+                    <td>{{ list.created_at|date:"d-m-Y" }}</td>
+                    <td>{{ list.status|uppercon }}</td>
+                    </td>
+                </tr>
+                {% endfor %}
+            <tfoot>
+                <tr>
+                    <th>Service No.</th>
+                    <th>Title</th>
+                    <th>priority</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#table_data').DataTable();
+    });
+</script>
+{% endblock script %}

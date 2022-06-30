@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Create Service Request{% endblock title %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Create Service Request</h2>
+    <hr>
+    <br>
+    <form method="POST" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="name">Title<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.title}}
+                    <label class="label--desc">Enter title</label>
+                    {{form.title.errors}}
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Details<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.details}}
+                    <label class="label--desc">Enter details</label>
+                    {{form.details.errors}}
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Priority<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        {{form.priority}}
+                        <div class="select-dropdown"></div>
+                    </div>
+                    {{form.priority.errors}}
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Attached File</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="filecontainer">
+                        {{form.files}}
+                        <label class="label--desc filelabel" id="filelabel">Maximum upload file size: 5MB</label>
+                        {{form.files.errors}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Enter Security Code<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <input id="textBox" type="text" name="text" placeholder="Enter Security Code"
+                        class="input--style-5">
+                </div>
+                <div class="input-group-desc captcha__container">
+                    <canvas id="captcha" width="220" height="40">captcha text</canvas>
+                    <div id="refreshButton" class="btn btn-info ml-2">Refresh</div>
+                </div>
+                <label class="label--desc" id="output">Read Captcha Properly and Then Enter The Code</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <button class="btn btn-primary" type="submit" id="create">Create</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <title>E-Fix - {% block title %}{% endblock title %}</title>
+    <style>
+        label {
+            font-size: 85%;
+            color: red;
+        }
+
+        .message {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="loginbox" style="margin-top:10vh;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+            <div class="panel panel-info">
+                {% block content %}
+                {% endblock content %}
+            </div>
+        </div>
+    </div>
+    <p style="font-size:14px; color:#555; line-height:18px; text-align: center;">
+        &copy; <a href="https://efixbd.com"> <strong>efixbd.com</strong></a></p>
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div id="msg_text_success" class="message">{{ message }}</div>
+    {% elif message.tags == 'error' %}
+    <div id="msg_text_error" class="message">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'js/tata.js' %}"></script>
+    <script>
+        if ($('#msg_text_success').text() != '') {
+            tata.success('Success', $('#msg_text_success').text(), {
+                position: 'tr',
+                duration: 10000
+            })
+        } else if ($('#msg_text_error').text() != '') {
+            tata.error('Error', $('#msg_text_error').text(), {
+                position: 'tr',
+                duration: 10000
+            })
+        }
+    </script>
+    {% block script %}
+    {% endblock script %}
+
+</body>
+
+</html>

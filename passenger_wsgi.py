@@ -1,0 +1,1 @@
+from efix.wsgi import application

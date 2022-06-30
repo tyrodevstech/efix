@@ -1,0 +1,7 @@
+{% autoescape off %}Hello, {{customer_name}}
+
+Your requested service payment status currently: {{status}}
+Thank you for taking our service.
+
+Sincerely,
+E-fix{% endautoescape %}

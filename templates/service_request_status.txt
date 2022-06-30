@@ -1,0 +1,11 @@
+{% load customtags %}{% autoescape off %}Hello, {{customer_name}}
+
+Your requested service currently: {{status|uppercon}}
+
+Your work has been assign to technician,
+Name: {{technician_name}}
+Phone: {{technician_phone}}{% if technician_email %}
+Email: {{technician_email}}{% endif %}
+
+Sincerely,
+E-fix{% endautoescape %}

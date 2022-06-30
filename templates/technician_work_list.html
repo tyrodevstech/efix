@@ -1,0 +1,166 @@
+{% load customtags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Fix-Technician Work List</title>
+
+</head>
+
+<body>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            color: #627186 !important;
+        }
+
+        .export {
+            width: max-content;
+        }
+    </style>
+    {% include 'preloader.html' %}
+    <div class="container-fluid p-4">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.1/css/dataTables.bootstrap5.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.bootstrap5.min.css">
+
+        <form class="w-100 pb-3 px-0" method="POST" id="techselect">
+            {% csrf_token %}
+            <h4>Select Technician</h4>
+            <select name="technician_id" id="technicianselect" class="form-select" style="width: max-content;">
+                <option value="" disabled {% if not technician_id %} selected {% endif %}>Select Technician</option>
+                {% for tech in technicianList %}
+                <option value="{{tech.id}}" {% if tech.id == technician_id %} selected {% endif %}>{{tech.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        {% csrf_token%}
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Service No.</th>
+                    <th>Title</th>
+                    <th>Customer Name</th>
+                    <th>Customer Phone</th>
+                    <th>Customer Email</th>
+                    <th>Technician</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in servicelist %}
+                <tr>
+                    <td>{{ list.servicereq_no }}</td>
+                    <td>{{ list.title }}</td>
+                    <td>{{ list.customer.customerregistration.name }}</td>
+                    <td>{{ list.customer.customerregistration.phone }}</td>
+                    <td>{{ list.customer.email }}</td>
+                    <td>{{ list.technician }}</td>
+                    <td>{{ list.status|uppercon }}</td>
+                    <td>{{ list.created_at|date:"d-m-Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Service No.</th>
+                    <th>Title</th>
+                    <th>Customer Name</th>
+                    <th>Customer Phone</th>
+                    <th>Customer Email</th>
+                    <th>Technician</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="export">
+            <span>Export: </span>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.colVis.min.js"></script>
+    <script>
+        $(window).on('load', function () {
+            $('.preloader-container').fadeOut('slow')
+        })
+        $("#technicianselect").change(function () {
+            $("#techselect").submit();
+        });
+        $(document).ready(function () {
+            table = $('#example').DataTable({
+                lengthChange: true,
+                buttons: [
+                    // 'copy', 'excel', 'pdf', 'csv',
+                    {
+                        extend: 'pdfHtml5',
+                        title: 'E-Fix',
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        title: 'E-Fix',
+                    },
+                    {
+                        extend: 'print',
+                        title: 'E-Fix',
+                    },
+                ]
+            });
+            table.buttons().container()
+                .appendTo('.export');
+        });
+
+
+
+        // API GET TECHNICIAN WORK LIST 
+        // servicelistData1 = []
+        // function serviceData(item, index) {
+        //     servicelistData2 = [item['servicereq_no'], item['title'], item['status']]
+        //     servicelistData1.push(servicelistData2)
+        // }
+        // $('#technicianselect').on('change', function () {
+        //     var technician_id = $(this).val();
+        //     console.log(technician_id)
+        //     if (technician_id) {
+        //         dataDict = {
+        //             'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+        //             'technician_id': technician_id,
+        //         }
+        //         $.ajax({
+        //             type: 'POST',
+        //             url: '/get_service_data',
+        //             data: dataDict,
+        //             success: function (data) {
+        //                 data.servicelist.forEach(serviceData)
+        //                 console.log(data.servicelist)
+        //                 table.clear().draw();
+        //                 table.rows.add(servicelistData1).draw();
+        //                 servicelistData1 = []
+
+        //             }
+        //         });
+        //     }
+        // })
+    </script>
+</body>
+
+</html>

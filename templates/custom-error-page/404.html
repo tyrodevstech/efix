@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>404</h1>
+        <h4>page not found</h4>
+        <a href="#" onclick="window.history.back();">Go back home</a>
+    </div>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 10rem;
+        }
+
+        h4 {
+            font-size: 2rem;
+        }
+
+        a {
+            display: inline-block;
+            text-decoration: none;
+            font-size: 1.25rem;
+            margin: 2rem;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 2px;
+            background-color: rgb(66, 101, 255);
+        }
+
+        @media screen and (max-width:768px) {
+            h1 {
+                font-size: 5rem;
+            }
+
+            h4 {
+                font-size: 1rem;
+            }
+
+            a {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</body>
+
+</html>

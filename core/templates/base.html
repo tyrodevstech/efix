@@ -1,0 +1,198 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>E-Fix - {% block title %}{% endblock title %}</title>
+    <link rel="shortcut icon" type="image/jpg" href="{% static 'img/favicon.png' %}" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
+    <link href="{% static 'vendor/mdi-font/css/material-design-iconic-font.min.css' %}" rel="stylesheet" media="all">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+    <link href="{% static 'vendor/select2/select2.min.css' %}" rel="stylesheet" media="all">
+    <link href="{% static 'vendor/datepicker/daterangepicker.css' %}" rel="stylesheet" media="all">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.min.css">
+
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+</head>
+
+<body>
+    {% include 'preloader.html' %}
+    <div class="wrapper d-flex align-items-stretch">
+        <nav id="sidebar">
+            <div class="p-4 pt-5">
+                <a href="#" class="img logo rounded-circle mb-5"><img
+                        src="{% if request.user.customerregistration.picture %}{{ request.user.customerregistration.picture.url }}{% else %}{% static 'img/default_avatar.png' %}{% endif %}"
+                        alt=""></a>
+                <ul class="list-unstyled components mb-5">
+                    {% url 'dashboard' as dashboardV %}
+                    <li class="{% if request.path == dashboardV %}active{% endif %}">
+                        <a href="{% url 'dashboard' %}"><i class='bx bx-home'></i>Home</a>
+                    </li>
+
+                    {% if request.user.customerregistration.role == 'technician' %}
+                    {% url 'work_request_list' as work_request_listV %}
+                    <li class="{% if request.path == work_request_listV %}active{% endif %}">
+                        <a href="{{work_request_listV}}">
+                            <i class='bx bxs-briefcase'></i>Work Request List
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.user.customerregistration.role == 'customer' %}
+                    <li>
+                        {% url 'create_service' as create_service_requestV %}
+                        {% url 'service_request_list' as service_request_listV %}
+                        <a href="#serviceReqSubmenu" data-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle"><i class='bx bxs-wrench'></i>Service Request</a>
+                        <ul class="collapse list-unstyled {% if request.path == create_service_requestV or request.path == service_request_listV %}show{% endif %}"
+                            id="serviceReqSubmenu">
+                            <li class="{% if request.path == create_service_requestV %}active{% endif %}">
+                                <a href="{{create_service_requestV}}"><i
+                                        class='bx bx-plus-circle bx-flashing'></i>Create</a>
+                            </li>
+                            <li class="{% if request.path == service_request_listV %}active{% endif %}">
+                                <a href="{{service_request_listV}}"><i class='bx bx-list-ul bx-tada'></i>View list</a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li>
+                        {% url 'updateProfile' pk=request.user.customerregistration.id as updateProfileV %}
+                        {% url 'changePassword' as changePasswordV %}
+
+                        <a href="#updateSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i
+                                class='bx bx-user'></i>Update profile</a>
+                        <ul class="collapse list-unstyled {% if request.path == updateProfileV or request.path == changePasswordV %}show{% endif %}"
+                            id="updateSubmenu">
+                            <li class="{% if request.path == updateProfileV %}active{% endif %}">
+                                <a href="{{updateProfileV}}"><i class='bx bxs-info-circle bx-flashing'></i>Update
+                                    Information</a>
+                            </li>
+                            <li class="{% if request.path == changePasswordV %}active{% endif %}">
+                                <a href="{{changePasswordV}}"><i class='bx bxs-key bx-tada'></i>Change
+                                    Password</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}" onclick="return confirm('Are you sure ?')"><i
+                                class='bx bx-log-out'></i>Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer p-4">
+                <p>
+                    Copyright &copy;<script>
+                        document.write(new Date().getFullYear());
+                    </script> All rights reserved | This site developed<i class="icon-heart" aria-hidden="true"></i>
+                    by <a href="https://www.itsourcebd.com/" target="_blank">itsourcebd.com</a>
+                </p>
+            </div>
+        </nav>
+        <!-- Page Content  -->
+        <div id="content" class="p-4 p-md-5">
+            <div class="w-100 pb-4">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary active">
+                    <div class="hamtime">
+                        <div class="bar"></div>
+                    </div>
+                    <span class="sr-only">Toggle Menu</span>
+                </button>
+            </div>
+            <div class="container-fluid p-0" style="min-width: 300px;max-width: 1550px !important;">
+                {% block content %}
+                {% endblock content %}
+            </div>
+
+        </div>
+    </div>
+    <div class="overlay"></div>
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <div id="msg_text_success" class="message">{{ message }}</div>
+    {% elif message.tags == 'error' %}
+    <div id="msg_text_error" class="message">{{ message }}</div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="{% static 'dashboard/js/popper.js' %}"></script>
+    <script src="{% static  'dashboard/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'dashboard/js/main.js' %}"></script>
+    <script src="{% static 'js/tata.js' %}"></script>
+
+    <!-- Jquer Datatable -->
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.min.js"></script>
+
+    <!-- Vendor JS-->
+    <script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+    <script src="{% static 'vendor/datepicker/moment.min.js' %}"></script>
+    <script src="{% static 'vendor/datepicker/daterangepicker.js' %}"></script>
+
+    <!-- Main JS-->
+    <script src="{% static 'js/global.js' %}"></script>
+    <script src="{% static 'js/captcha.js' %}"></script>
+
+    <script>
+        if ($('#msg_text_success').text() != '') {
+            tata.success('Success', $('#msg_text_success').text(), {
+                position: 'tr',
+                duration: 10000
+            })
+        } else if ($('#msg_text_error').text() != '') {
+            tata.error('Error', $('#msg_text_error').text(), {
+                position: 'tr',
+                duration: 10000
+            })
+        }
+    </script>
+    {% block script %}
+    {% endblock script %}
+    <script>
+        $(window).on('load', function () {
+            $('.preloader-container').fadeOut('slow')
+        })
+    </script>
+    <script>
+        $(document).on({
+            ajaxStart: function () {
+                $("body").addClass("loading");
+            },
+            ajaxStop: function () {
+                $("body").removeClass("loading");
+            }
+        });
+    </script>
+    <script>
+        console.log(window.localStorage.getItem('sidebar_status'))
+        if (window.localStorage.getItem('sidebar_status')) {
+            $('#sidebar').toggleClass('active');
+            $('#sidebarCollapse').toggleClass('active')
+
+        }
+        $('#sidebarCollapse').on('click', function () {
+            if (window.localStorage.getItem('sidebar_status')) {
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active')
+                window.localStorage.removeItem('sidebar_status');
+
+            } else {
+                window.localStorage.setItem("sidebar_status", "active");
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active')
+            }
+        })
+    </script>
+</body>
+
+</html>

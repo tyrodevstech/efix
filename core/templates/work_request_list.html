@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load customtags %}
+{% block title %}Service Request List{% endblock title %}
+{% block content %}
+<div class="w-100">
+    <h2 class="mb-4">Your Work Request List</h2>
+    <hr>
+    <div class="card p-4 table-responsive">
+        <table id="table_data" class="table table-sm table-striped service_req_list" style="width:100%">
+            <thead class="table-dark">
+                <tr>
+                    <th>Service No</th>
+                    <th>Title</th>
+                    <th>priority</th>
+                    <th>Customer name</th>
+                    <th>Customer phone</th>
+                    <th>Customer email</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for list in work_list %}
+                <tr>
+                    <td>{{ list.servicereq_no }}</td>
+                    <td>{{ list.title }}</td>
+                    <td>{{ list.priority }}</td>
+                    <td>{{ list.customer.customerregistration.name }}</td>
+                    <td>{{ list.customer.customerregistration.phone }}</td>
+                    <td>{{ list.customer.customerregistration.email }}</td>
+                    <td class="date">{{ list.created_at|date:"d-m-Y" }}</td>
+                    <td>
+                        <div class="optionbox">
+                            <select class="form-select status filter_select" id="fselect" data-id="{{list.id}}">
+                                <option value='new' {% if list.status == 'new' %} selected {% endif %}>New</option>
+                                <option value='in_progress' {% if list.status == 'in_progress' %} selected {% endif %}>
+                                    In Progress</option>
+                                <option value='waittingoncustomer' {% if list.status == 'waittingoncustomer' %} selected
+                                    {% endif %}>Waitting on Customer</option>
+                                <option value='fixed' {% if list.status == 'fixed' %} selected {% endif %}>Fixed
+                                </option>
+                                <option value='closed' {% if list.status == 'closed' %} selected {% endif %}>Closed
+                                </option>
+                                <option value='cancelled' {% if list.status == 'cancelled' %} selected {% endif %}>
+                                    Cancelled</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><a href="{% url 'details_service' pk=list.id %}" class="btn btn-secondary btn-sm">Details</a>
+                    </td>
+                    <td><button class="btn btn-info btn-sm update_btn">Update</button></td>
+                </tr>
+                {% endfor %}
+            <tfoot>
+                <tr>
+                    <th>Service No</th>
+                    <th>Title</th>
+                    <th>priority</th>
+                    <th>Customer name</th>
+                    <th>Customer phone</th>
+                    <th>Customer email</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                    <th>Update</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<style>
+    .invoice-form-container {
+        position: absolute;
+        inset: 0;
+        z-index: 100;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.548);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+    }
+
+    .invoice_form {
+        position: relative;
+        margin: auto;
+        width: max-content;
+        height: max-content;
+        min-width: 500px;
+        background-color: #1d1919;
+        color: #fff;
+        border-radius: 5px;
+        padding: 2rem;
+    }
+
+    .invoice_form h2 {
+        font-size: 1.75rem;
+        color: #fff;
+    }
+
+    .invoice_form textarea {
+        resize: both !important;
+        line-height: normal;
+        padding: 0.5rem 1rem;
+    }
+
+    .close-form {
+        position: absolute;
+        right: 10px;
+        top: 0;
+        font-size: 30px;
+        cursor: pointer;
+        background-color: none;
+        color: aliceblue;
+    }
+
+    .close-form:hover {
+        color: red;
+    }
+
+    @media only screen and (max-width: 768px) {
+        .invoice_form {
+            min-width: auto;
+        }
+    }
+</style>
+<div class="invoice-form-container">
+    <form method="POST" class="invoice_form" enctype="multipart/form-data">
+        <h2>Invoice Form</h2>
+        <span class="close-form">&times;</span>
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ invoiceform.tech_charge }}
+        </div>
+
+        <div class="mb-3">
+            {{ invoiceform.details }}
+        </div>
+
+        <div class="mb-3">
+            {{ invoiceform.equip_charge }}
+            <div id="emailHelp" class="form-text text-white">If you used any parts or equipments then fill-up this
+                feild.
+            </div>
+        </div>
+
+        <div class="mb-3">
+            {{invoiceform.files}}
+            <label class="label--desc filelabel" id="filelabel">Maximum upload file size: 5MB</label>
+            {{invoiceform.files.errors}}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+
+{% endblock content %}
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('#table_data').DataTable();
+    });
+</script>
+
+<script>
+    $('.invoice_form .close-form').on('click', function () {
+        $('.invoice-form-container').css('display', 'none');
+    })
+
+    $(document).ready(function () {
+        $('.update_btn').on('click', function () {
+            var select = $(this).closest('tr').find('select.status')
+            var status = select.val();
+            var id = select.data('id')
+
+            if (status === 'closed') {
+                $('.invoice-form-container').css('display', 'flex');
+                $('.invoice-form-container .invoice_form').append(
+                    `<input type="password" name="service_id" value=${id} hidden><input type="password" name="curr_status" value=${status} hidden>`
+                )
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'satusUpdate' %}",
+                    data: {
+                        status: status,
+                        id: id
+                    },
+                    success: function (data) {
+                        var status = data.status
+                        if (status == 'null') {
+                            tata.info('Alert',
+                                `No Changes Detected for: ${data.service_no}`, {
+                                    position: 'tr',
+                                    duration: 3000
+                                })
+                        } else if (status === 1) {
+                            tata.success('Success',
+                                `Status updated for: ${data.service_no}`, {
+                                    position: 'tr',
+                                    duration: 5000
+                                })
+                        } else {
+                            tata.error('Error', 'An error occured when updating status', {
+                                position: 'tr',
+                                duration: 5000
+                            })
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+{% endblock script %}

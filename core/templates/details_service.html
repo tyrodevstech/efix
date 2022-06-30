@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load customtags %}
+{% block title %}Create Service Request{% endblock title %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Details Service Request</h2>
+    <hr>
+    <br>
+    <div class="w-100 d-flex justify-content-end">
+        <div class="alert alert-info" role="alert">
+            <span class="">Service Created Date: {{ obj.created_at|date:"d-m-Y" }}</span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="name">Service No.</div>
+        <div class="value">
+            <div class="input-group-desc">
+                <input type="text" class="input--style-5" disabled value="{{ obj.servicereq_no }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="name">Title</div>
+        <div class="value">
+            <div class="input-group-desc">
+                <input type="text" class="input--style-5" disabled value="{{ obj.title }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="name">Details</div>
+        <div class="value">
+            <div class="input-group-desc">
+                <textarea name="" id="" cols="30" rows="4" class="input--style-5" disabled>{{ obj.details }}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="name">Priority</div>
+        <div class="value">
+            <div class="input-group-desc">
+                <input type="text" class="input--style-5" disabled value="{{ obj.priority }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="name">Status</div>
+        <div class="value">
+            <div class="input-group-desc">
+                <input type="text" class="input--style-5" disabled value="{{ obj.status|uppercon }}">
+            </div>
+        </div>
+    </div>
+    {% if obj.files %}
+    <a href="{{ obj.files.url }}" class="btn btn-info btn-sm" download>Download Attached File</a><br>
+    {% else %}
+    <span style="font-weight: 700; font-size: 1rem;">No Attached File Included</span>
+    {% endif %}
+
+</div>
+{% endblock content %}

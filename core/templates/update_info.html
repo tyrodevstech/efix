@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Update Information{% endblock title %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Update Information</h2>
+    <hr>
+    <br>
+    <form method="POST" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        <div class="form-row mb-3">
+            <div class="name">Name<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.name}}
+                    <label class="label--desc">Enter name</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">Email</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.email}}
+                    <label class="label--desc emailwarn">Enter email</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">Phone<sup style="color: red;">*</sup></div>
+            <div class="value">
+                <div class="row row-space">
+                    <div class="col-6">
+                        <div class="input-group-desc">
+                            {{form.phone}}
+                            <label class="label--desc phonewarn">Primary</label>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="input-group-desc">
+                            {{form.other_phone}}
+                            <label class="label--desc">Alternative</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="name">Registration Type</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        {{form.registration_type}}
+                        <div class="select-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">Business Name</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.business_name}}
+                    <label class="label--desc required">(Optional)</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Country</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        <select name="country" id="country">
+                            <option selected="selected">Bangladesh</option>
+                        </select>
+                        <div class="select-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Division</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        <select name="division" id="division">
+                            <option value="" disabled="disabled" selected="selected">Please Select</option>
+                            {% for division in divisions %}
+                            <option value="{{division.name}}" {% if division.name == customer_info.division %} selected
+                                {% endif %}>
+                                {{division.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="select-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">District</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        <input type="text" id="customer_district" value="{{customer_info.district}}" hidden>
+                        <select name="district" id="district">
+                            <option value="" disabled="disabled" selected="selected">Select
+                                Division
+                                First
+                            </option>
+                        </select>
+                        <div class="select-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Upazila</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="rs-select2 js-select-simple select--no-search">
+                        <input type="text" id="customer_upazila" value="{{customer_info.upazila}}" hidden>
+                        <select name="upazila" id="upazila">
+                            <option value="" disabled="disabled" selected="selected">Select
+                                District
+                                First
+                            </option>
+                        </select>
+                        <div class="select-dropdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">Post Office/Union</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.post_office_or_union}}
+                    <label class="label--desc">Enter post office/union</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">Village/House</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.house_info}}
+                    <label class="label--desc">Enter house info</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row mb-3">
+            <div class="name">National ID</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    {{form.nid}}
+                    <label class="label--desc">Enter NID number(optional)</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="name">Profile Picture</div>
+            <div class="value">
+                <div class="input-group-desc">
+                    <div class="filecontainer">
+                        {{form.picture}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row p-t-20">
+            <label class="label label--block">Go to - <a href="{% url 'dashboard' %}">Dashboard</a></label>
+        </div>
+        <div class="form-row">
+            <button class="btn btn-primary" type="submit" id="register">Update</button>
+        </div>
+    </form>
+</div>
+{% endblock content %}
+
+{% block script %}
+
+
+<script>
+    $('#id_username').addClass('input--style-5')
+    $('#id_username').removeAttr('required')
+    $('#id_password1').addClass('input--style-5')
+    $('#id_password2').addClass('input--style-5')
+    $('#id_registration_type').on('change', function () {
+        if ($(this).val() == 'Commercial') {
+            $('input[name="business_name"]').attr('required', 'required')
+            $('.required').html('(Required)')
+        } else {
+            $('input[name="business_name"]').removeAttr('required');
+            $('.required').html('(Optional)')
+        }
+    })
+
+    selectOptions = ''
+
+
+
+    function options(item, index) {
+        selectOptions += `<option value='${item['name']}'>${item['name']}</option>`
+    }
+
+
+
+    $('#division').on('change', function () {
+        var division = $(this).val();
+        if (division) {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'division': division,
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/api/district',
+                data: dataDict,
+                success: function (data) {
+                    selectOptions +=
+                        ` <option value="" disabled="disabled" selected="selected">Please Select</option>`
+                    data.districtsList.forEach(options)
+                    $('#district').html(selectOptions);
+                    selectOptions = ''
+                }
+            });
+        } else {
+            console.log("No data found")
+        }
+    })
+
+
+
+    $('#district').on('change', function () {
+        var district = $(this).val();
+        if (district) {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'district': district,
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/api/upazila',
+                data: dataDict,
+                success: function (data) {
+                    selectOptions +=
+                        ` <option value="" disabled="disabled" selected="selected">Please Select</option>`
+                    data.upazilaList.forEach(options)
+                    $('#upazila').html(selectOptions);
+                    selectOptions = ''
+                }
+            });
+        } else {
+            console.log("No data found")
+        }
+    })
+
+
+
+    $("#id_email").on('keyup', function () {
+        let email = "{{customer_info.email}}"
+        let emailName = $(this).val();
+        if ((emailName.length > 2) && (emailName.indexOf(".") >= 0) && (email.indexOf(emailName) < 0)) {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'emailName': emailName
+            }
+            $.ajax({
+                type: 'POST',
+                url: '{% url "getEmail" %}',
+                data: dataDict,
+                success: function (data) {
+                    if (data.status == 1) {
+                        $('#id_email').addClass('errorfield')
+                        $(".emailwarn").html('Email already exist please try another email!');
+                        $(".emailwarn").addClass('errorlabel');
+                        $("#register").addClass('disabled');
+                    } else if ($('#id_phone').hasClass('errorfield')) {
+                        $('#id_email').removeClass('errorfield')
+                        $(".emailwarn").html('Enter email');
+                        $(".emailwarn").removeClass('errorlabel');
+                    } else {
+                        $('#id_email').removeClass('errorfield')
+                        $(".emailwarn").html('Enter email');
+                        $(".emailwarn").removeClass('errorlabel');
+                        $("#register").removeClass('disabled');
+                    }
+                }
+            });
+        } else if ($('#id_phone').hasClass('errorfield')) {
+            $('#id_email').removeClass('errorfield')
+            $(".emailwarn").html('Enter email');
+            $(".emailwarn").removeClass('errorlabel');
+        } else {
+            $('#id_email').removeClass('errorfield')
+            $(".emailwarn").html('Enter email');
+            $(".emailwarn").removeClass('errorlabel');
+            $("#register").removeClass('disabled');
+        }
+    });
+    $("#id_phone").on('keyup', function () {
+        let phone = "{{customer_info.phone}}"
+        let phoneNum = $(this).val();
+        if ((phone.indexOf(phoneNum) < 0) && (phoneNum.length > 6)) {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'phoneNum': phoneNum
+            }
+            $.ajax({
+                type: 'POST',
+                url: '{% url "getPhone" %}',
+                data: dataDict,
+                success: function (data) {
+                    if (data.status == 1) {
+                        $('#id_phone').addClass('errorfield')
+                        $(".phonewarn").html('Phone Number already exist please try another!');
+                        $(".phonewarn").addClass('errorlabel');
+                        $("#register").addClass('disabled');
+                    } else if ($('#id_email').hasClass('errorfield')) {
+                        $('#id_phone').removeClass('errorfield')
+                        $(".phonewarn").html('Primary');
+                        $(".phonewarn").removeClass('errorlabel');
+                    } else {
+                        $('#id_phone').removeClass('errorfield')
+                        $(".phonewarn").html('Primary');
+                        $(".phonewarn").removeClass('errorlabel');
+                        $("#register").removeClass('disabled');
+                    }
+                }
+            });
+        } else if ($('#id_email').hasClass('errorfield')) {
+            $('#id_phone').removeClass('errorfield')
+            $(".phonewarn").html('Primary');
+            $(".phonewarn").removeClass('errorlabel');
+        } else {
+            $('#id_phone').removeClass('errorfield')
+            $(".phonewarn").html('Primary');
+            $(".phonewarn").removeClass('errorlabel');
+            $("#register").removeClass('disabled');
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        var division = $('#division').val();
+        var district = $('#customer_district').val();
+        var upazila = $('#customer_upazila').val();
+
+        console.log(division)
+        console.log(district)
+        console.log(upazila)
+
+        function update_options1(item, index) {
+            if (item['name'] == district) {
+                selectOptions +=
+                    `<option value='${item['name']}' selected = "selected">${item['name']}</option>`
+            } else {
+                selectOptions += `<option value='${item['name']}'>${item['name']}</option>`
+            }
+        }
+        if (division != null) {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'division': division,
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/api/district',
+                data: dataDict,
+                success: function (data) {
+                    selectOptions +=
+                        `<option value="" disabled="disabled" selected="selected">Please Select</option>`
+                    data.districtsList.forEach(update_options1)
+                    $('#district').html(selectOptions);
+                    selectOptions = ''
+                }
+            });
+        } else {
+            console.log("No data found")
+        }
+
+
+
+        function update_options2(item, index) {
+            if (item['name'] == upazila) {
+                selectOptions +=
+                    `<option value='${item['name']}' selected = "selected">${item['name']}</option>`
+            } else {
+                selectOptions += `<option value='${item['name']}'>${item['name']}</option>`
+            }
+        }
+        if (district != 'None') {
+            dataDict = {
+                'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+                'district': district,
+            }
+            $.ajax({
+                type: 'POST',
+                url: '/api/upazila',
+                data: dataDict,
+                success: function (data) {
+                    selectOptions +=
+                        ` <option value="" disabled="disabled" selected="selected">Please Select</option>`
+                    data.upazilaList.forEach(update_options2)
+                    $('#upazila').html(selectOptions);
+                    selectOptions = ''
+                }
+            });
+        } else {
+            console.log("No data found")
+        }
+    });
+</script>
+{% endblock script %}
