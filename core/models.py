@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
-
-class customerRegistration(models.Model):
+class CustomUserRegistration(models.Model):
     registrationType = (
         ('','Please Select'),
         ('Residential', 'Residential'),
@@ -15,7 +15,7 @@ class customerRegistration(models.Model):
         ('admin', 'admin'),
         ('technician', 'technician'),
     )
-
+# ,related_name='custuserreg'
     user = models.OneToOneField(User, on_delete =models.CASCADE, null=True)
     reg_no = models.BigIntegerField(null=True)
     name = models.CharField(max_length=122, null=True)
@@ -39,7 +39,10 @@ class customerRegistration(models.Model):
     def __str__(self):
         return self.name
 
-
+class Area(models.Model):
+    area_name = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return f'{self.area_name}'
 class ServiceRequest(models.Model):
     priority_choice  = (
         ('High', 'High'),
@@ -55,7 +58,7 @@ class ServiceRequest(models.Model):
         ('cancelled','Cancelled'),
     )
     customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    technician = models.ForeignKey(customerRegistration, on_delete=models.SET_NULL, null=True,related_name='technician')
+    technician = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='technician')
     servicereq_no = models.CharField(max_length=122, null=True)
     title = models.CharField(max_length=250, null=True)
     details = models.TextField(max_length=1000, null=True)
@@ -79,7 +82,7 @@ class Invoice(models.Model):
     details = models.TextField(max_length=1000, null=True)
     equip_charge = models.FloatField(max_length=250, null=True, blank=True)
     files = models.FileField(upload_to= 'invoice_file', null=True, blank=True)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(default=timezone.now)
     status =  models.CharField(max_length=122, choices=PAYMENT_STATUS, null=True,blank=True,default='Unpaid')
     
     def __str__(self):

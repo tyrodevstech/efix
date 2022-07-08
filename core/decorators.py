@@ -4,7 +4,7 @@ from .models import *
 
 def user_is_admin(function):
     def wrap(request, *args, **kwargs):
-        if request.user.is_superuser and (not hasattr(request.user, 'customerregistration')):
+        if request.user.is_superuser and (not hasattr(request.user, 'customuserregistration')):
             return redirect('/admin/')
         else:
             return function(request, *args, **kwargs)
@@ -14,7 +14,7 @@ def user_is_admin(function):
 
 def user_is_technician(function):
     def wrap(request, *args, **kwargs):
-        if request.user.customerregistration.role == 'technician':
+        if request.user.customuserregistration.role == 'technician':
             return function(request, *args, **kwargs)
         else:
             return redirect('dashboard')
@@ -24,7 +24,7 @@ def user_is_technician(function):
 
 def user_is_customer(function):
     def wrap(request, *args, **kwargs):
-        if request.user.customerregistration.role == 'customer':
+        if request.user.customuserregistration.role == 'customer':
             return function(request, *args, **kwargs)
         else:
             return redirect('dashboard')

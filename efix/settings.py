@@ -43,11 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'corsheaders',
+    "corsheaders",
     'core',
     'app_api',
     'rest_framework',
     'django_cleanup.apps.CleanupConfig',
+    'django_filters',
 ]
 
 
@@ -64,7 +65,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'efix.urls'
 
@@ -208,7 +209,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
     {'label': ('E-Fix Functionality'), 'items': [
-        {'name': 'core.customerregistration','label': ('Created Accounts')},
+        {'name': 'core.customuserregistration','label': ('Created Accounts')},
         {'name': 'core.servicerequest','label': ('Requested Services')},
         {'name': 'core.invoice','label': ('Invoice List')},
     ]},

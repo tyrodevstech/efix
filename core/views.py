@@ -53,20 +53,20 @@ def logout_view(request):
 @login_required(login_url='login')
 @user_is_admin
 def dashboard_view(request):
-    if hasattr(request.user, 'customerregistration'):
-        if request.user.customerregistration.active:
+    if hasattr(request.user, 'customuserregistration'):
+        if request.user.customuserregistration.active:
             remaining = 0
             completed = 0
             totalService = 0
             tech_total_charge=0
             equip_total_charge=0
-            if request.user.customerregistration.role == 'customer':
+            if request.user.customuserregistration.role == 'customer':
                 totalService = ServiceRequest.objects.filter(customer = request.user).count()
                 currentUser = 'customer'
-            elif request.user.customerregistration.role == 'technician':
-                remaining = ServiceRequest.objects.filter(Q(technician = request.user.customerregistration)).exclude(status = 'closed').count()
-                completed = ServiceRequest.objects.filter(Q(technician = request.user.customerregistration)&Q(status='closed')).count()
-                invoiceListtech = Invoice.objects.filter(service__technician=request.user.customerregistration)
+            elif request.user.customuserregistration.role == 'technician':
+                remaining = ServiceRequest.objects.filter(Q(technician = request.user.customuserregistration)).exclude(status = 'closed').count()
+                completed = ServiceRequest.objects.filter(Q(technician = request.user.customuserregistration)&Q(status='closed')).count()
+                invoiceListtech = Invoice.objects.filter(service__technician=request.user.customuserregistration)
                 for i in invoiceListtech:
                     tech_total_charge += i.tech_charge
                     equip_total_charge += i.equip_charge
@@ -281,7 +281,7 @@ def service_request_list_view(request):
 @user_is_admin
 @user_is_technician
 def work_request_list_view(request):
-    work_list = ServiceRequest.objects.filter(technician = request.user.customerregistration).order_by('-created_at')
+    work_list = ServiceRequest.objects.filter(technician = request.user.customuserregistration).order_by('-created_at')
 
     if request.method == 'POST':
         form = InvoiceForm(request.POST, request.FILES)

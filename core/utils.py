@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.http import HttpResponse
-from .models import customerRegistration,ServiceRequest
+from .models import CustomUserRegistration,ServiceRequest
 from django.conf import settings
 from django.core.mail import send_mail, EmailMessage,BadHeaderError
 from django.template.loader import render_to_string
@@ -18,7 +18,7 @@ def getTicketNo():
 
 def getRegnum():
     snum = 100001
-    obj = customerRegistration.objects.last()
+    obj = CustomUserRegistration.objects.last()
     if obj:
         rnumber = obj.reg_no+1
     else:
@@ -39,9 +39,9 @@ def technicianAssignMail(obj):
     c = {
         'service_no':obj.servicereq_no,
         'service_title':obj.title,
-        'customer_name':obj.customer.customerregistration.name,
-        'customer_phone':obj.customer.customerregistration.phone,
-        'customer_email':obj.customer.customerregistration.email,
+        'customer_name':obj.customer.customuserregistration.name,
+        'customer_phone':obj.customer.customuserregistration.phone,
+        'customer_email':obj.customer.customuserregistration.email,
         'technician_name':obj.technician.name,
     }
     text_version = 'service_assigned.txt'
@@ -56,7 +56,7 @@ def technicianAssignMail(obj):
 def serviceStatusMail(obj):
     subject = f"{obj.servicereq_no} {obj.title}"
     c = {
-        'customer_name':obj.customer.customerregistration.name,
+        'customer_name':obj.customer.customuserregistration.name,
         'status':obj.status,
         'technician_name':obj.technician.name,
         'technician_phone':obj.technician.phone,
@@ -65,7 +65,7 @@ def serviceStatusMail(obj):
     text_version = 'service_request_status.txt'
     text_message = render_to_string(text_version,c)
     try:
-        send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,[obj.customer.customerregistration.email])
+        send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,[obj.customer.customuserregistration.email])
     except BadHeaderError:
         return HttpResponse('Invalid header found.')
 
@@ -87,7 +87,7 @@ def serviceInvoiceMail(obj):
     html_version = 'invoice.html'
     html_template = render_to_string(html_version,c)
     try:
-        message = EmailMessage(subject, html_template, settings.DEFAULT_FROM_EMAIL,[obj.service.customer.customerregistration.email])
+        message = EmailMessage(subject, html_template, settings.DEFAULT_FROM_EMAIL,[obj.service.customer.customuserregistration.email])
         message.content_subtype = 'html'
         message.send()
     except BadHeaderError:
@@ -97,13 +97,13 @@ def serviceInvoiceMail(obj):
 def paymentStatusMail(obj):
     subject = f"Invoice#{obj.id}-Service{obj.service.servicereq_no}-{obj.service.title}"
     c = {
-        'customer_name':obj.service.customer.customerregistration.name,
+        'customer_name':obj.service.customer.customuserregistration.name,
         'status':obj.status,
     }
     text_version = 'payment_status.txt'
     text_message = render_to_string(text_version,c)
     try:
-        send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,[obj.service.customer.customerregistration.email])
+        send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,[obj.service.customer.customuserregistration.email])
     except BadHeaderError:
         return HttpResponse('Invalid header found.')
 

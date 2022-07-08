@@ -2,9 +2,9 @@ from django import forms
 from django.forms import fields, widgets
 from .models import *
 
-class customerRegistrationForm(forms.ModelForm):
+class CustomUserRegistrationForm(forms.ModelForm):
     class Meta:
-        model = customerRegistration
+        model = CustomUserRegistration
         fields = [
             'name',
             'email',
@@ -17,9 +17,9 @@ class customerRegistrationForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class': 'input--style-5'}),
         }
 
-class customerRegistrationUpdateForm(forms.ModelForm):
+class CustomUserRegistrationUpdateForm(forms.ModelForm):
     class Meta:
-        model = customerRegistration
+        model = CustomUserRegistration
         fields = [
             'name',
             'email',

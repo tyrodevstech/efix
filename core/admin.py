@@ -13,45 +13,45 @@ admin.site.register(District)
 admin.site.register(Upazila)
 
 
-class customerRegistrationAdmin(admin.ModelAdmin):
+class CustomUserRegistrationAdmin(admin.ModelAdmin):
     list_filter = ('role','active','registration_type',)
     list_display = ('name','phone','email','role','active')
     search_fields = ['phone','role','name','email','reg_no',]
-    def save_model(self, request, obj, form, change):
-        if obj.active and ('active' in form.changed_data):
-            confirmMail(obj)
-        super(customerRegistrationAdmin, self).save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if obj.active and ('active' in form.changed_data):
+    #         confirmMail(obj)
+    #     super(CustomUserRegistrationAdmin, self).save_model(request, obj, form, change)
 
-admin.site.register(customerRegistration, customerRegistrationAdmin)
+admin.site.register(CustomUserRegistration, CustomUserRegistrationAdmin)
 
 
 class ServiceRequestAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ServiceRequestAdminForm, self).__init__(*args, **kwargs)
-        self.fields['technician'].queryset = customerRegistration.objects.filter(role='technician')
+        self.fields['technician'].queryset = CustomUserRegistration.objects.filter(role='technician')
 
 
 class ServiceRequestAdmin(admin.ModelAdmin):
     form = ServiceRequestAdminForm
-    readonly_fields=('customer', )
+    # readonly_fields=('customer', )
     list_filter = ('priority', 'status',)
     list_display = ('servicereq_no','title', 'get_customer_name','get_customer_phone','get_customer_email','technician','status','update_status',)
     list_editable = ('status',)
-    search_fields = ['title','customer__customerregistration__phone','servicereq_no',]
+    search_fields = ['title','customer__customuserregistration__phone','servicereq_no',]
     change_list_template = 'custom_change_list/custom_service_change_list.html'
     def get_customer_name(self,obj):
-        return obj.customer.customerregistration.name
-    get_customer_name.admin_order_field = 'customer__customerregistration__name'
+        return obj.customer.customuserregistration.name
+    get_customer_name.admin_order_field = 'customer__customuserregistration__name'
     get_customer_name.short_description = 'Customer Name'
 
     def get_customer_phone(self,obj):
-        return obj.customer.customerregistration.phone
-    get_customer_phone.admin_order_field = 'customer__customerregistration__phone'
+        return obj.customer.customuserregistration.phone
+    get_customer_phone.admin_order_field = 'customer__customuserregistration__phone'
     get_customer_phone.short_description = 'Customer Phone'
 
     def get_customer_email(self,obj):
-        return obj.customer.customerregistration.email
-    get_customer_email.admin_order_field = 'customer__customerregistration__email'
+        return obj.customer.customuserregistration.email
+    get_customer_email.admin_order_field = 'customer__customuserregistration__email'
     get_customer_email.short_description = 'Customer Email'
 
 
@@ -81,18 +81,18 @@ class InvoiceAdmin(admin.ModelAdmin):
     get_servicereq_no.short_description = 'Service No'
 
     def get_customer_name(self,obj):
-        return obj.service.customer.customerregistration.name
-    get_customer_name.admin_order_field = 'service__customer__customerregistration__name'
+        return obj.service.customer.customuserregistration.name
+    get_customer_name.admin_order_field = 'service__customer__customuserregistration__name'
     get_customer_name.short_description = 'Customer Name'
 
     def get_customer_phone(self,obj):
-        return obj.service.customer.customerregistration.phone
-    get_customer_phone.admin_order_field = 'service__customer__customerregistration__phone'
+        return obj.service.customer.customuserregistration.phone
+    get_customer_phone.admin_order_field = 'service__customer__customuserregistration__phone'
     get_customer_phone.short_description = 'Customer Phone'
 
     def get_customer_email(self,obj):
-        return obj.service.customer.customerregistration.email
-    get_customer_email.admin_order_field = 'service__customer__customerregistration__email'
+        return obj.service.customer.customuserregistration.email
+    get_customer_email.admin_order_field = 'service__customer__customuserregistration__email'
     get_customer_email.short_description = 'Customer Email'
 
     def get_service_title(self,obj):
