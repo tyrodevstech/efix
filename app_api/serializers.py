@@ -70,7 +70,7 @@ class InvoiceSerializer(ModelSerializer):
     class Meta:
         model = Invoice
         fields = '__all__'
-        depth = 3
+        depth = 2
 
     # def to_representation(self, instance):
     #     response = super().to_representation(instance)

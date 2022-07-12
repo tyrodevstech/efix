@@ -102,10 +102,10 @@ def dashboard_view(request):
 @login_required(login_url='login')
 @user_is_admin
 def updateProfile_view(request, pk):
-    customer_info = customerRegistration.objects.get(id=pk)
-    form = customerRegistrationUpdateForm(instance= customer_info)
+    customer_info = CustomUserRegistration.objects.get(id=pk)
+    form = CustomUserRegistrationUpdateForm(instance= customer_info)
     if request.method == 'POST':
-        form = customerRegistrationUpdateForm(request.POST,request.FILES, instance= customer_info)
+        form = CustomUserRegistrationUpdateForm(request.POST,request.FILES, instance= customer_info)
         if form.is_valid():
             user = User.objects.get(id = request.user.id)
             user.email = request.POST.get('email')
@@ -148,10 +148,10 @@ def changePassword_view(request):
 
 
 def registration_view(request):
-    form = customerRegistrationForm()
+    form = CustomUserRegistrationForm()
     userform = UserCreationForm()
     if request.method == 'POST':
-        form = customerRegistrationForm(request.POST,request.FILES)
+        form = CustomUserRegistrationForm(request.POST,request.FILES)
         updated_request = request.POST.copy()
         updated_request['username']= request.POST.get('phone')
         userform = UserCreationForm(updated_request)
@@ -195,7 +195,7 @@ def getUpazila_view(request):
 
 def getEmail_view(request):
     emailName = request.POST.get('emailName')
-    Customerinfo = customerRegistration.objects.filter(email__icontains = emailName)
+    Customerinfo = CustomUserRegistration.objects.filter(email__icontains = emailName)
     if Customerinfo.count() > 0:
         return JsonResponse({'status' : 1})
     else:
@@ -205,7 +205,7 @@ def getEmail_view(request):
 
 def getPhone_view(request):
     phoneNum = request.POST.get('phoneNum')
-    Customerinfo = customerRegistration.objects.filter(phone__icontains = phoneNum)
+    Customerinfo = CustomUserRegistration.objects.filter(phone__icontains = phoneNum)
     if Customerinfo.count() > 0:
         return JsonResponse({'status' : 1})
     else:
@@ -381,7 +381,7 @@ def admin_servicelist_view(request):
 
 @login_required(login_url='login')
 def get_technician_work_list(request):
-    technicianList = customerRegistration.objects.filter(role = 'technician' )
+    technicianList = CustomUserRegistration.objects.filter(role = 'technician' )
     technician_id = request.POST.get('technician_id')
     if technician_id:
         technician_id =  int(technician_id)

@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Area, CustomUserRegistration, Invoice, ServiceRequest
-
+from rest_framework.parsers import JSONParser,FormParser,MultiPartParser
 # Create your views here.
 
 class AdminViewSet(ModelViewSet):
@@ -75,3 +75,14 @@ class ServiceRequestViewSet(ModelViewSet):
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all()
+    # parser_classes = [FormParser,MultiPartParser]
+    def create(self, request):
+        print(request.data)
+        print(request.FILES)
+        serializer = InvoiceSerializer(data=request.data)
+        print(serializer.is_valid())
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

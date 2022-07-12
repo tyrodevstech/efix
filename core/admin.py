@@ -35,23 +35,28 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     form = ServiceRequestAdminForm
     # readonly_fields=('customer', )
     list_filter = ('priority', 'status',)
-    list_display = ('servicereq_no','title', 'get_customer_name','get_customer_phone','get_customer_email','technician','status','update_status',)
+    list_display = ('servicereq_no','title', 'get_customer_name','get_customer_phone','get_customer_email','get_tech_name','status','update_status',)
     list_editable = ('status',)
-    search_fields = ['title','customer__customuserregistration__phone','servicereq_no',]
+    search_fields = ['title','customer__phone','servicereq_no',]
     change_list_template = 'custom_change_list/custom_service_change_list.html'
+    def get_tech_name(self,obj):
+        return obj
+    get_tech_name.admin_order_field = 'technicain__name'
+    get_tech_name.short_description = 'Technician Name'
+
     def get_customer_name(self,obj):
-        return obj.customer.customuserregistration.name
-    get_customer_name.admin_order_field = 'customer__customuserregistration__name'
+        return obj.customer.name
+    get_customer_name.admin_order_field = 'customer__name'
     get_customer_name.short_description = 'Customer Name'
 
     def get_customer_phone(self,obj):
-        return obj.customer.customuserregistration.phone
-    get_customer_phone.admin_order_field = 'customer__customuserregistration__phone'
+        return obj.customer.phone
+    get_customer_phone.admin_order_field = 'customer__phone'
     get_customer_phone.short_description = 'Customer Phone'
 
     def get_customer_email(self,obj):
-        return obj.customer.customuserregistration.email
-    get_customer_email.admin_order_field = 'customer__customuserregistration__email'
+        return obj.customer.email
+    get_customer_email.admin_order_field = 'customer__email'
     get_customer_email.short_description = 'Customer Email'
 
 
@@ -81,18 +86,18 @@ class InvoiceAdmin(admin.ModelAdmin):
     get_servicereq_no.short_description = 'Service No'
 
     def get_customer_name(self,obj):
-        return obj.service.customer.customuserregistration.name
-    get_customer_name.admin_order_field = 'service__customer__customuserregistration__name'
+        return obj.service.customer.name
+    get_customer_name.admin_order_field = 'service__customer__name'
     get_customer_name.short_description = 'Customer Name'
 
     def get_customer_phone(self,obj):
-        return obj.service.customer.customuserregistration.phone
-    get_customer_phone.admin_order_field = 'service__customer__customuserregistration__phone'
+        return obj.service.customer.phone
+    get_customer_phone.admin_order_field = 'service__customer__phone'
     get_customer_phone.short_description = 'Customer Phone'
 
     def get_customer_email(self,obj):
-        return obj.service.customer.customuserregistration.email
-    get_customer_email.admin_order_field = 'service__customer__customuserregistration__email'
+        return obj.service.customer.email
+    get_customer_email.admin_order_field = 'service__customer__email'
     get_customer_email.short_description = 'Customer Email'
 
     def get_service_title(self,obj):
@@ -105,10 +110,10 @@ class InvoiceAdmin(admin.ModelAdmin):
     # get_technician_name.admin_order_field = 'service__title'
     get_technician_name.short_description = 'Technician'
 
-    def save_model(self, request, obj, form, change):
-        if ('status' in form.changed_data) and (obj.status == 'Paid'):
-            paymentStatusMail(obj)
-        super(InvoiceAdmin, self).save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if ('status' in form.changed_data) and (obj.status == 'Paid'):
+    #         paymentStatusMail(obj)
+    #     super(InvoiceAdmin, self).save_model(request, obj, form, change)
 
 
 admin.site.register(Invoice, InvoiceAdmin)

@@ -16,13 +16,15 @@ def get_mdod(request):
     invoiceListforMonth = Invoice.objects.filter(created_at__range=[month_fday,month_lday])
     for i in invoiceListforMonth:
         if i.status == 'Unpaid':
-            monthlyDue += (i.tech_charge + i.equip_charge)
+            # monthlyDue += (i.tech_charge + i.equip_charge)
+            pass
 
 
     invoiceList = Invoice.objects.filter()
     for i in invoiceList:
         if i.status == 'Unpaid':
-            totalDue += (i.tech_charge + i.equip_charge)
+            # totalDue += (i.tech_charge + i.equip_charge)
+            pass
 
 
     context={

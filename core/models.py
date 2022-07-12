@@ -57,8 +57,8 @@ class ServiceRequest(models.Model):
         ('closed','Closed'),
         ('cancelled','Cancelled'),
     )
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    technician = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='technician')
+    customer = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='customerrs',blank=True)
+    technician = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='technicianrs',blank=True)
     servicereq_no = models.CharField(max_length=122, null=True)
     title = models.CharField(max_length=250, null=True)
     details = models.TextField(max_length=1000, null=True)
@@ -82,7 +82,7 @@ class Invoice(models.Model):
     details = models.TextField(max_length=1000, null=True)
     equip_charge = models.FloatField(max_length=250, null=True, blank=True)
     files = models.FileField(upload_to= 'invoice_file', null=True, blank=True)
-    created_at = models.DateField(default=timezone.now)
+    created_at = models.DateField(auto_now_add=True)
     status =  models.CharField(max_length=122, choices=PAYMENT_STATUS, null=True,blank=True,default='Unpaid')
     
     def __str__(self):
