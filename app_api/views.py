@@ -12,14 +12,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Area, CustomUserRegistration, Invoice, ServiceRequest
 from rest_framework.parsers import JSONParser,FormParser,MultiPartParser
 # Create your views here.
-
+from django_filters.rest_framework import DjangoFilterBackend
 class AdminViewSet(ModelViewSet):
-    # permission_classes = [AllowAny]
-    # authentication_classes = []
     serializer_class = AdminSerializer
     queryset = User.objects.filter(is_superuser=True)
     def list(self, request):
-        queryset = User.objects.filter(is_superuser=True)
+        queryset = User.objects.filter(is_superuser=True).exclude(pk=request.user.pk).exclude(username='superadmin')
         serializer = AdminSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -71,7 +69,9 @@ class AreaViewSet(ModelViewSet):
 class ServiceRequestViewSet(ModelViewSet):
     serializer_class = ServiceRequestSerializer
     queryset = ServiceRequest.objects.all()
-
+    filter_backends = [filters.SearchFilter,DjangoFilterBackend,]
+    filterset_fields = ('customer','priority')
+    search_fields = ['servicereq_no','title','priority',]
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all()
