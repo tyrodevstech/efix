@@ -1,0 +1,6 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home2/chwtyhzg/efixroot/
+    - /bin/cp -r * $DEPLOYPATH
+    
