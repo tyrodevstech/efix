@@ -1,0 +1,118 @@
+{% load customtags %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>E-Fix Invoice</title>
+
+		<style>
+			table {
+				width: 100%;
+				line-height: inherit;
+                font-size: 15px;
+			}
+
+			table tr.heading td {
+				background: #eee;
+				border-bottom: 1px solid #ddd;
+				font-weight: bold;
+                font-size: 17px;
+			}
+
+			table tr td {
+				padding: 5px;
+                width: 100%;
+			}
+
+			table tr.item td {
+				border-bottom: 1px solid #eee;
+			}
+
+			table tr.item.last td {
+				border-bottom: none;
+			}
+
+			table tr.total td:nth-child(2) {
+				border-top: 2px solid #eee;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="invoice-box">
+			<div id="header_content">
+				<h1 style="color: #3d3df5; font-size: 30px;padding: 5px;"> E-Fix </h1>
+			</div>
+			<table cellpadding="0" cellspacing="0" style="text-align: right">
+				<tr class="top">
+					<td colspan="2">
+						<table>
+							<tr>
+								<td class="title"> </td>
+								<td style="text-align: right; font-weight: 600">
+									Invoice : #{{id}}<br />
+									Created at: {{date}}<br />
+									Email: info@efixbd.com<br />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<table style="margin-top: 40px">
+				<tr class="heading">
+					<td>Parts / Equipments Cost</td>
+					<td style="text-align: right; font-weight: 600; margin-left: auto"
+						>Cost #</td
+					>
+				</tr>
+
+				<tr class="details">
+					<td>Charge</td>
+					<td style="text-align: right; font-weight: 600"
+						>{{parts_charge}}Tk.</td
+					>
+				</tr>
+
+				<tr class="heading">
+					<td>Teachnician Charge</td>
+					<td style="text-align: right; font-weight: 600">Charge</td>
+				</tr>
+
+				<tr class="item last">
+					<td>Charge</td>
+					<td style="text-align: right; font-weight: 600"
+						>{{tech_charge}}Tk.</td
+					>
+				</tr>
+				<tr class="total">
+					<td></td>
+					<td style="text-align: right; font-weight: 600"
+						>Total: {{tech_charge|add2var:parts_charge}}Tk.</td
+					>
+				</tr>
+				<tr class="heading">
+					<td>Details / Attachment</td>
+					<td></td>
+				</tr>
+				<tr class="item">
+					<td>Details</td>
+					<td style="text-align: right; font-weight: 600">{{parts_details}}</td>
+				</tr>
+				{% if document %}
+				<tr class="item">
+					<td>Attached File</td>
+					<td style="text-align: right; font-weight: 600;color:#3d3df5">
+                        {{protocol}}://{{domain}}/{{document.url}}
+					</td>
+				</tr>
+				{% else %}
+				<tr class="item">
+					<td>No Attached File</td>
+				</tr>
+				{% endif %}
+			</table>
+		</div>
+	</body>
+</html>

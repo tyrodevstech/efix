@@ -2,6 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+
+class Area(models.Model):
+    area_name = models.CharField(max_length=255, null=True)
+    def __str__(self):
+        return f'{self.area_name}'
+
+
 class CustomUserRegistration(models.Model):
     registrationType = (
         ('','Please Select'),
@@ -31,6 +38,7 @@ class CustomUserRegistration(models.Model):
     upazila = models.CharField(max_length=122, null=True, blank=True)
     post_office_or_union = models.CharField(max_length=122, null=True, blank=True)
     house_info = models.CharField(max_length=122, null=True, blank=True)
+    work_area = models.ForeignKey(Area,on_delete=models.SET_NULL,null=True)
     nid = models.CharField(max_length=122, null=True, blank=True)
     picture = models.ImageField(upload_to= 'image', null=True, blank=True)
     active = models.BooleanField(default=False,null=True)
@@ -39,10 +47,7 @@ class CustomUserRegistration(models.Model):
     def __str__(self):
         return self.name
 
-class Area(models.Model):
-    area_name = models.CharField(max_length=255, null=True)
-    def __str__(self):
-        return f'{self.area_name}'
+
 class ServiceRequest(models.Model):
     priority_choice  = (
         ('High', 'High'),
@@ -71,7 +76,6 @@ class ServiceRequest(models.Model):
         return f'{self.title}'
 
 
-
 class Invoice(models.Model):
     PAYMENT_STATUS = (
         ('Paid','Paid'),
@@ -89,13 +93,11 @@ class Invoice(models.Model):
         return f'#{self.id}-Invoice-{self.service.title}'
 
 
-
 class Country(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
-
 
 
 class Division(models.Model):
@@ -106,14 +108,12 @@ class Division(models.Model):
         return self.name
 
 
-
 class District(models.Model):
     division = models.ForeignKey(Division, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
-
 
 
 class Upazila(models.Model):
