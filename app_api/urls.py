@@ -4,7 +4,6 @@ from app_api.token import EmailTokenObtainPairView
 from app_api.views import *
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
 

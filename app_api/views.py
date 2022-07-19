@@ -19,9 +19,12 @@ from core.utils import getRegnum, getTicketNo
 class AdminViewSet(ModelViewSet):
     serializer_class = AdminSerializer
     queryset = User.objects.filter(is_superuser=True)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['first_name','last_name', 'username','email']
+
     def list(self, request):
         queryset = User.objects.filter(is_superuser=True).exclude(pk=request.user.pk).exclude(username='superadmin')
-        serializer = AdminSerializer(queryset, many=True)
+        serializer = AdminSerializer(self.filter_queryset(queryset), many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -66,7 +69,8 @@ class CustomerRegistraionViewSet(ModelViewSet):
 class AreaViewSet(ModelViewSet):
     serializer_class = AreaSerializer
     queryset = Area.objects.all()
-
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['area_name',]
 
 class ServiceRequestViewSet(ModelViewSet):
     serializer_class = ServiceRequestSerializer
@@ -90,12 +94,11 @@ class ServiceRequestViewSet(ModelViewSet):
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['service__id','status',]
     # parser_classes = [FormParser,MultiPartParser]
     def create(self, request):
-        print(request.data)
-        print(request.FILES)
         serializer = InvoiceSerializer(data=request.data)
-        print(serializer.is_valid())
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
