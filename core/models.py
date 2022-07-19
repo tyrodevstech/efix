@@ -19,11 +19,9 @@ class CustomUserRegistration(models.Model):
 
     roleType = (
         ('customer', 'customer'),
-        ('admin', 'admin'),
         ('technician', 'technician'),
     )
-# ,related_name='custuserreg'
-    user = models.OneToOneField(User, on_delete =models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete = models.CASCADE, null=True)
     reg_no = models.BigIntegerField(null=True)
     name = models.CharField(max_length=122, null=True)
     email = models.EmailField(max_length=122, null=True , blank=True)
@@ -43,6 +41,10 @@ class CustomUserRegistration(models.Model):
     picture = models.ImageField(upload_to= 'image', null=True, blank=True)
     active = models.BooleanField(default=False,null=True)
     date = models.DateField(auto_now_add=True)
+
+    def delete(self, *args, **kwargs):
+        self.user.delete()
+        return super(CustomUserRegistration, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.name

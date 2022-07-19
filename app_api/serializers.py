@@ -25,16 +25,25 @@ class UserSerializer(ModelSerializer):
 
 class CustomUserRegistrationSerializer(ModelSerializer):
     def validate_email(self, value):
-        lower_email = value.lower()
-        if CustomUserRegistration.objects.filter(email__iexact=lower_email).exists():
-            raise ValidationError("This email already exits!")
-        return lower_email
+        if value:
+            lower_email = value.lower()
+            if hasattr(self.instance,'email'):
+                if lower_email == self.instance.email:
+                    return lower_email
+                elif CustomUserRegistration.objects.filter(email__iexact=lower_email).exists():
+                    raise ValidationError("This email already exist!")
+            return lower_email
+        return value
 
     def validate_phone(self, value):
-        lower_phone = value.lower()
-        if CustomUserRegistration.objects.filter(phone__iexact=lower_phone).exists():
-            raise ValidationError("This phone already exits!")
-        return lower_phone
+        if value:
+            if hasattr(self.instance,'phone'):
+                if value == self.instance.phone:
+                    return value
+                elif CustomUserRegistration.objects.filter(phone__iexact=value).exists():
+                    raise ValidationError("This phone already exist!")
+        return value
+
     class Meta:
         model = CustomUserRegistration
         fields = '__all__'
