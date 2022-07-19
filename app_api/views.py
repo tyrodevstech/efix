@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.shortcuts import get_object_or_404, render
 from rest_framework.viewsets import ModelViewSet
-from app_api.serializers import  AdminSerializer, AreaSerializer, CustomUserRegistrationSerializer, InvoiceSerializer, ServiceRequestSerializer
+from app_api.serializers import  *
 from rest_framework import filters
 from django.contrib.auth.models import User
 from rest_framework.response import Response
