@@ -14,6 +14,9 @@ router.register(r'account',CustomerRegistraionViewSet,basename='customuserregist
 router.register(r'service_request',ServiceRequestViewSet,basename='service_request')
 router.register(r'invoice',InvoiceViewSet,basename='invoice')
 router.register(r'area',AreaViewSet,basename='area')
+router.register(r'division',DivisionViewSet,basename='division')
+router.register(r'district',DistrictViewSet,basename='district')
+router.register(r'upazila',UpazilaViewSet,basename='upazila')
 
 urlpatterns = [
     path('token', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
