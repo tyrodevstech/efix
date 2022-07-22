@@ -79,7 +79,7 @@ class ServiceRequestViewSet(ModelViewSet):
     queryset = ServiceRequest.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title', 'priority', 'status', 'created_at']
-    filterset_fields = ['customer', ]
+    filterset_fields = ['customer','technician' ]
 
     def create(self, request):
         data = request.data

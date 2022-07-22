@@ -11,16 +11,16 @@ class AdminSerializer(ModelSerializer):
         return User.objects.create_superuser(**validated_data)
 
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['customerreg',]
-        # depth=1
-        # exclude='__all__'
-    def to_representation(self, instance):
-        response = super().to_representation(instance)
-        response['customerreg'] = CustomUserRegistrationSerializer(instance.customerreg).data
-        return response
+# class UserSerializer(ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ['customerreg',]
+#         # depth=1
+#         # exclude='__all__'
+#     def to_representation(self, instance):
+#         response = super().to_representation(instance)
+#         response['customerreg'] = CustomUserRegistrationSerializer(instance.customerreg).data
+#         return response
 
 
 class CustomUserRegistrationSerializer(ModelSerializer):
