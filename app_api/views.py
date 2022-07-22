@@ -8,6 +8,7 @@ from rest_framework import filters
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from app_api.utils import notify_admins, send_push_message
 from core.custom_context_processor import get_mdod
 from core.models import Area, CustomUserRegistration, Invoice, ServiceRequest, Division, District, Upazila
 from django_filters.rest_framework import DjangoFilterBackend
@@ -23,6 +24,8 @@ class AdminViewSet(ModelViewSet):
     search_fields = ['first_name','last_name', 'username','email']
 
     def list(self, request):
+        # send_push_message('ExponentPushToken[OidHnDCKzMbQNhP1BS9mAk]','demo message')
+        notify_admins(title='Account created',message='demo message')
         queryset = User.objects.filter(is_superuser=True).exclude(pk=request.user.pk).exclude(username='superadmin')
         serializer = AdminSerializer(self.filter_queryset(queryset), many=True)
         return Response(serializer.data)
@@ -63,6 +66,7 @@ class CustomerRegistraionViewSet(ModelViewSet):
         if serializer.is_valid():
             newUser = User.objects.create_user(username = data.get('phone'), email = data.get('email'), password = data.get('password'))
             serializer.save(user = newUser, reg_no= getRegnum())
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -75,36 +79,47 @@ class AreaViewSet(ModelViewSet):
 class ServiceRequestViewSet(ModelViewSet):
     serializer_class = ServiceRequestSerializer
     queryset = ServiceRequest.objects.all().order_by('-id')
-    filter_backends = [filters.SearchFilter,DjangoFilterBackend,]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title', 'priority', 'status', 'created_at']
     filterset_fields = ['customer', ]
-    
+
     def create(self, request):
         data = request.data
         customer = CustomUserRegistration.objects.get(id=data.get('customerID'))
+
         serializer = ServiceRequestSerializer(data=data)
-
         if serializer.is_valid():
-            serializer.save( customer = customer, servicereq_no = getTicketNo())
-
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+            if customer.work_area:
+                technician = CustomUserRegistration.objects.filter(role='technician').filter(work_area=customer.work_area).first()
+                if technician:
+                    serializer.save( customer = customer, technician=technician, servicereq_no = getTicketNo())
+                    if hasattr(technician.user,'userdevicetoken'):
+                        if technician.user.userdevicetoken.device_token:
+                            send_push_message(technician.user.userdevicetoken.device_token,'New Service Created','A new service is created and assigned to you. Please check it.')
+                    return Response(serializer.data,status=status.HTTP_201_CREATED)
+                else:
+                    return Response(data={"status": "Admin doesn't assigned area to technician yet!"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(data={"status": "Admin doesn't assigned area to customer yet!"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
-    queryset = Invoice.objects.all()
-    filter_backends = [filters.SearchFilter]
+    queryset = Invoice.objects.all().order_by('-id')
+    filter_backends = [filters.SearchFilter,DjangoFilterBackend]
+    filterset_fields = ['service__customer', ]
     search_fields = ['service__id','status',]
-    # parser_classes = [FormParser,MultiPartParser]
+
     def create(self, request):
+        service = ServiceRequest.objects.get(id=request.data.get('serviceID'))
         serializer = InvoiceSerializer(data=request.data)
+
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(service = service)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
 
 class TransactionView(APIView):
     
@@ -159,3 +174,29 @@ class UpazilaViewSet(ModelViewSet):
     queryset = Upazila.objects.all()
     filter_backends = [filters.SearchFilter]
     search_fields = ['district__name',]
+
+class NotificationTokenViewSet(ModelViewSet):
+    serializer_class = NotificationTokenSerializer
+    queryset = NotificationToken.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['user',]
+
+    def create(self, request):
+        serializer = NotificationTokenSerializer(data=request.data)
+        deviceToken = request.data.get('device_token',None)
+        existingTokenqs = NotificationToken.objects.filter(device_token=deviceToken)
+        if existingTokenqs:
+            for tokenObj in existingTokenqs:
+                tokenObj.device_token = None
+                tokenObj.save()
+                
+        if serializer.is_valid():
+            if hasattr(request.user,'userdevicetoken'):
+                userdevicetoken =  request.user.userdevicetoken
+                userdevicetoken.device_token = deviceToken
+                userdevicetoken.save()
+            else:
+                serializer.save(user=request.user)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

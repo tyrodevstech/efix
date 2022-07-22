@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer,ValidationError
 from django.contrib.auth.models import User
-from core.models import CustomUserRegistration,Area, Invoice, ServiceRequest, Division, District, Upazila
+from core.models import CustomUserRegistration,Area, Invoice, NotificationToken, ServiceRequest, Division, District, Upazila
 class AdminSerializer(ModelSerializer):
     class Meta:
         model = User
@@ -92,6 +92,13 @@ class DistrictSerializer(ModelSerializer):
 class UpazilaSerializer(ModelSerializer):
     class Meta:
         model = Upazila
+        fields = '__all__'
+        depth = 1
+
+
+class NotificationTokenSerializer(ModelSerializer):
+    class Meta:
+        model = NotificationToken
         fields = '__all__'
         depth = 1
 

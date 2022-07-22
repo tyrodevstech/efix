@@ -218,7 +218,7 @@ JET_SIDE_MENU_ITEMS = [  # A list of application or custom item dicts
         {'name': 'core.country','label': ('Countrys')},
         {'name': 'core.division','label': ('Divisions')},
         {'name': 'core.district','label': ('Districts')},
-        {'name': 'core.upazila','label': ('Upazilas')},
+        {'name': 'core.notificationtoken','label': ('NotificationToken')},
     ]},
     {'label': ('user accounts and groups'),'app_label':'auth', 'items': [
         {'name': 'auth.user'},

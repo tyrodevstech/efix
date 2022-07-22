@@ -124,3 +124,11 @@ class Upazila(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class NotificationToken(models.Model):
+    user = models.OneToOneField(User,on_delete=models.CASCADE,null=True,related_name='userdevicetoken')
+    device_token = models.CharField(max_length=999,null=True)
+
+    def __str__(self):
+        return f'{self.user} Token'

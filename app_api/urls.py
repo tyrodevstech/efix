@@ -16,6 +16,7 @@ router.register(r'area',AreaViewSet,basename='area')
 router.register(r'division',DivisionViewSet,basename='division')
 router.register(r'district',DistrictViewSet,basename='district')
 router.register(r'upazila',UpazilaViewSet,basename='upazila')
+router.register(r'userdevicetoken',NotificationTokenViewSet,basename='userdevicetoken')
 
 urlpatterns = [
     path('token', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
