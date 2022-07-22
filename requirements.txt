@@ -17,6 +17,7 @@ django-cors-headers==3.13.0
 django-filter==22.1
 djangorestframework==3.13.1
 djangorestframework-simplejwt==5.2.0
+exponent-server-sdk==2.0.0
 fonttools==4.34.4
 future==0.18.2
 graphics.py==5.0.1.post1
