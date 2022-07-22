@@ -28,7 +28,7 @@ class CustomUserRegistrationSerializer(ModelSerializer):
         if value:
             lower_email = value.lower()
             if hasattr(self.instance,'email'):
-                if lower_email == self.instance.email:
+                if lower_email == self.instance.email.lower():
                     return lower_email
                 elif CustomUserRegistration.objects.filter(email__iexact=lower_email).exists():
                     raise ValidationError("This email already exist!")
@@ -47,7 +47,6 @@ class CustomUserRegistrationSerializer(ModelSerializer):
     class Meta:
         model = CustomUserRegistration
         fields = '__all__'
-        depth=1
 
     # def to_representation(self, instance):
     #     response = super().to_representation(instance)

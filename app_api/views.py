@@ -24,8 +24,6 @@ class AdminViewSet(ModelViewSet):
     search_fields = ['first_name','last_name', 'username','email']
 
     def list(self, request):
-        # send_push_message('ExponentPushToken[OidHnDCKzMbQNhP1BS9mAk]','demo message')
-        notify_admins(title='Account created',message='demo message')
         queryset = User.objects.filter(is_superuser=True).exclude(pk=request.user.pk).exclude(username='superadmin')
         serializer = AdminSerializer(self.filter_queryset(queryset), many=True)
         return Response(serializer.data)
@@ -96,6 +94,8 @@ class ServiceRequestViewSet(ModelViewSet):
                     if hasattr(technician.user,'userdevicetoken'):
                         if technician.user.userdevicetoken.device_token:
                             send_push_message(technician.user.userdevicetoken.device_token,'New Service Created','A new service is created and assigned to you. Please check it.')
+                            notify_admins(title='New Service Created',message='A new service is created and assigned. Please check it for further details.')
+
                     return Response(serializer.data,status=status.HTTP_201_CREATED)
                 else:
                     return Response(data={"status": "Admin doesn't assigned area to technician yet!"}, status=status.HTTP_400_BAD_REQUEST)
