@@ -102,13 +102,20 @@ class ServiceRequestViewSet(ModelViewSet):
                 return Response(data={"status": "Admin doesn't assigned area to customer yet!"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+    def get_queryset(self):
+        queryset = ServiceRequest.objects.all()
+        exclude_status = self.request.query_params.get('exclude_status', None)
+        if exclude_status is not None:
+            queryset = queryset.exclude(status = exclude_status)
+        return queryset
 
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter,DjangoFilterBackend]
-    filterset_fields = ['service__customer', ]
-    search_fields = ['service__id','status',]
+    filterset_fields = ['service__customer','service__technician','status' ]
+    search_fields = ['service__id','created_at','=status',]
 
     def create(self, request):
         service = ServiceRequest.objects.get(id=request.data.get('serviceID'))
