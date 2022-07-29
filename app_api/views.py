@@ -130,8 +130,8 @@ class InvoiceViewSet(ModelViewSet):
 class TransactionView(APIView):
     
     def get(self, request, format=None):
-        due = request.query_params.get('due',None)
-        if due == 'total':
+        total = request.query_params.get('total',None)
+        if total == 'pd':
             return Response(get_mdod(request))
         return Response({})
 

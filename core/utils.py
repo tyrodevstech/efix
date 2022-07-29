@@ -108,13 +108,6 @@ def paymentStatusMail(obj):
         return HttpResponse('Invalid header found.')
 
 
-
-
-
-
-
-
-
 def get_months():
     date_today = datetime.today()
     month_fday = date_today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
