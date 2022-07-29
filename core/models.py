@@ -84,9 +84,9 @@ class Invoice(models.Model):
         ('Unpaid','Unpaid'),
     )
     service = models.ForeignKey(ServiceRequest, on_delete=models.CASCADE, null=True)
-    tech_charge = models.FloatField(max_length=250, null=True)
+    tech_charge = models.FloatField(max_length=250, null=True,default=0)
     details = models.TextField(max_length=1000, null=True)
-    equip_charge = models.FloatField(max_length=250, null=True, blank=True)
+    equip_charge = models.FloatField(max_length=250, null=True, blank=True,default=0)
     files = models.FileField(upload_to= 'invoice_file', null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     status =  models.CharField(max_length=122, choices=PAYMENT_STATUS, null=True,blank=True,default='Unpaid')
