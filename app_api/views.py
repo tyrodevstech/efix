@@ -15,6 +15,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from rest_framework.views import APIView
+from core.templatetags.customtags import uppercon
 from core.utils import getRegnum, getTicketNo
 # Create your views here.
 class AdminViewSet(ModelViewSet):
@@ -78,7 +79,7 @@ class ServiceRequestViewSet(ModelViewSet):
     serializer_class = ServiceRequestSerializer
     queryset = ServiceRequest.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    search_fields = ['title', 'priority', 'status', 'created_at']
+    search_fields = ['title','servicereq_no', 'priority', 'status', 'created_at']
     filterset_fields = ['customer','technician' ]
 
     def create(self, request):
@@ -110,12 +111,30 @@ class ServiceRequestViewSet(ModelViewSet):
             queryset = queryset.exclude(status = exclude_status)
         return queryset
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        updatedStatus = uppercon(instance.status)
+        if hasattr(instance.technician.user,'userdevicetoken'):
+            if instance.technician.user.userdevicetoken.device_token:
+                send_push_message(instance.technician.user.userdevicetoken.device_token,'Service Status Updated',f'Service of #{instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
+        notify_admins(title='Service Status Updated',message=f'Service of #{instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
 class InvoiceViewSet(ModelViewSet):
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter,DjangoFilterBackend]
     filterset_fields = ['service__customer','service__technician','status' ]
-    search_fields = ['service__id','created_at','=status',]
+    search_fields = ['service__id','created_at','=status','service__servicereq_no']
 
     def create(self, request):
         service = ServiceRequest.objects.get(id=request.data.get('serviceID'))
@@ -123,6 +142,7 @@ class InvoiceViewSet(ModelViewSet):
 
         if serializer.is_valid():
             serializer.save(service = service)
+            notify_admins(title='New Invoice Created',message='A new invoice is created. Please check it for further details.')
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
@@ -158,7 +178,7 @@ def render_pdf_view(request,pk):
     pdf = pisa.pisaDocument(BytesIO(html.encode('UTF-8')),result)
     if not pdf.err:
         response = HttpResponse(result.getvalue(), content_type='application/pdf')
-        filename = f"Invoice_{pk}.pdf"
+        filename = f"invoice-{pk}.pdf"
         content = f"attachment; filename={filename}"
         response['Content-Disposition'] = content
         return response
