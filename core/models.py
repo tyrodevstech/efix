@@ -64,7 +64,7 @@ class ServiceRequest(models.Model):
         ('closed','Closed'),
         ('cancelled','Cancelled'),
     )
-    customer = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='customerrs',blank=True)
+    customer = models.ForeignKey(CustomUserRegistration, on_delete=models.CASCADE, null=True,related_name='customerrs',blank=True)
     technician = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='technicianrs',blank=True)
     servicereq_no = models.CharField(max_length=122, null=True)
     title = models.CharField(max_length=250, null=True)

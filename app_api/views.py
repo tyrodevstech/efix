@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.shortcuts import get_object_or_404, render
 from rest_framework.viewsets import ModelViewSet
+from app_api.permissions import IsPostOrIsAuthenticated
 from app_api.serializers import  *
 from rest_framework import filters
 from django.contrib.auth.models import User
@@ -45,6 +46,7 @@ class AdminViewSet(ModelViewSet):
 
 
 class CustomerRegistraionViewSet(ModelViewSet):
+    permission_classes=[IsPostOrIsAuthenticated]
     serializer_class = CustomUserRegistrationSerializer
     queryset = CustomUserRegistration.objects.all()
     filter_backends = [filters.SearchFilter]
@@ -65,10 +67,33 @@ class CustomerRegistraionViewSet(ModelViewSet):
         if serializer.is_valid():
             newUser = User.objects.create_user(username = data.get('phone'), email = data.get('email'), password = data.get('password'))
             serializer.save(user = newUser, reg_no= getRegnum())
+            role = data.get('role')
+            notify_admins(title='New Account Created',message=f'A new "{role}" account is created. Please check it for further details.')
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        previousStatus = instance.active
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        currentStatus = instance.active
+        if previousStatus != currentStatus and hasattr(instance.user,'userdevicetoken'):
+            if instance.user.userdevicetoken.device_token:
+                print('message send')
+                send_push_message(instance.user.userdevicetoken.device_token,'Account Status',f'Hi, {instance.name} your account has been \'{"Activated" if currentStatus else "Deactivated"}\'. Please check it for further details.')
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+        
 class AreaViewSet(ModelViewSet):
     serializer_class = AreaSerializer
     queryset = Area.objects.all()
@@ -80,7 +105,7 @@ class ServiceRequestViewSet(ModelViewSet):
     queryset = ServiceRequest.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title','servicereq_no', 'priority', 'status', 'created_at']
-    filterset_fields = ['customer','technician' ]
+    filterset_fields = ['customer','technician','status' ]
 
     def create(self, request):
         data = request.data
@@ -105,7 +130,7 @@ class ServiceRequestViewSet(ModelViewSet):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
     def get_queryset(self):
-        queryset = ServiceRequest.objects.all()
+        queryset = ServiceRequest.objects.all().order_by('-id')
         exclude_status = self.request.query_params.get('exclude_status', None)
         if exclude_status is not None:
             queryset = queryset.exclude(status = exclude_status)
@@ -120,8 +145,8 @@ class ServiceRequestViewSet(ModelViewSet):
         updatedStatus = uppercon(instance.status)
         if hasattr(instance.technician.user,'userdevicetoken'):
             if instance.technician.user.userdevicetoken.device_token:
-                send_push_message(instance.technician.user.userdevicetoken.device_token,'Service Status Updated',f'Service of #{instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
-        notify_admins(title='Service Status Updated',message=f'Service of #{instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
+                send_push_message(instance.technician.user.userdevicetoken.device_token,'Service Status Updated',f'Service of {instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
+        notify_admins(title='Service Status Updated',message=f'Service of {instance.servicereq_no} status is updated to \'{updatedStatus}\'. Please check it for further details.')
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
