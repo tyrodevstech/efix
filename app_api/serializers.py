@@ -35,7 +35,7 @@ class CustomUserRegistrationSerializer(ModelSerializer):
     def validate(self, data):
         validated_data = super().validate(data)
         if self.instance:
-            if not self.instance.work_area and validated_data.get('active',False):
+            if not (self.instance.work_area or validated_data.get('work_area',None)) and validated_data.get('active',False):
                 raise ValidationError("Please select work area first. ")
         return validated_data
 
