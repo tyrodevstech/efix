@@ -45,7 +45,7 @@ class AdminViewSet(ModelViewSet):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomerRegistraionViewSet(ModelViewSet):
+class CustomUserRegistraionViewSet(ModelViewSet):
     permission_classes=[IsPostOrIsAuthenticated]
     serializer_class = CustomUserRegistrationSerializer
     queryset = CustomUserRegistration.objects.all()
@@ -84,7 +84,6 @@ class CustomerRegistraionViewSet(ModelViewSet):
         currentStatus = instance.active
         if previousStatus != currentStatus and hasattr(instance.user,'userdevicetoken'):
             if instance.user.userdevicetoken.device_token:
-                print('message send')
                 send_push_message(instance.user.userdevicetoken.device_token,'Account Status',f'Hi, {instance.name} your account has been \'{"Activated" if currentStatus else "Deactivated"}\'. Please check it for further details.')
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to

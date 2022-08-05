@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import (
 
 router = DefaultRouter()
 router.register(r'admin',AdminViewSet)
-router.register(r'account',CustomerRegistraionViewSet,basename='customuserregistration')
+router.register(r'account',CustomUserRegistraionViewSet,basename='customuserregistration')
 router.register(r'service_request',ServiceRequestViewSet,basename='service_request')
 router.register(r'invoice',InvoiceViewSet,basename='invoice')
 router.register(r'area',AreaViewSet,basename='area')
