@@ -31,8 +31,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'jet.dashboard',
-    'jet',
+    # 'jet.dashboard',
+    # 'jet',
     # 'admin_black.apps.AdminBlackConfig',
     # 'adminlte3',
     # 'adminlte3_theme',
@@ -161,11 +161,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST = 'mail.efixbd.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'info@efixbd.com'
-EMAIL_HOST_PASSWORD = 'Sq5=B&Bhe!ot'
+EMAIL_HOST_USER = 'apps@efixbd.com'
+EMAIL_HOST_PASSWORD = 'CFMHD#pkz@GI'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = 'E-Fix <info@efixbd.com>'
+DEFAULT_FROM_EMAIL = 'E-Fix <apps@efixbd.com>'
 
 
 

@@ -36,7 +36,7 @@ class CustomUserRegistration(models.Model):
     upazila = models.CharField(max_length=122, null=True, blank=True)
     post_office_or_union = models.CharField(max_length=122, null=True, blank=True)
     house_info = models.CharField(max_length=122, null=True, blank=True)
-    work_area = models.ForeignKey(Area,on_delete=models.SET_NULL,null=True)
+    work_area = models.ForeignKey(Area,on_delete=models.SET_NULL,null=True,related_name='area')
     nid = models.CharField(max_length=122, null=True, blank=True)
     picture = models.ImageField(upload_to= 'image', null=True, blank=True)
     active = models.BooleanField(default=False,null=True)
@@ -85,7 +85,7 @@ class Invoice(models.Model):
     equip_charge = models.FloatField(max_length=250, null=True, blank=True,default=0)
     files = models.FileField(upload_to= 'invoice_file', null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
-    status =  models.CharField(max_length=122, choices=PAYMENT_STATUS, null=True,blank=True,default='Unpaid')
+    status =  models.CharField(max_length=122, choices=PAYMENT_STATUS, null=True,blank=True,default='Paid')
     
     def __str__(self):
         return f'#{self.id}-Invoice-{self.service.title}'

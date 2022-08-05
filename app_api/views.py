@@ -49,9 +49,9 @@ class CustomUserRegistraionViewSet(ModelViewSet):
     permission_classes=[IsPostOrIsAuthenticated]
     serializer_class = CustomUserRegistrationSerializer
     queryset = CustomUserRegistration.objects.all()
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name','role', 'user__id']
-
+    filter_backends = [filters.SearchFilter,DjangoFilterBackend]
+    search_fields = ['name','role', 'user__id','phone','work_area__area_name','reg_no']
+    filterset_fields = ['work_area']
     def list(self, request):
         queryset = CustomUserRegistration.objects.filter().order_by('-id')
         role = request.query_params.get('role',None)
@@ -171,12 +171,16 @@ class InvoiceViewSet(ModelViewSet):
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
-class TransactionView(APIView):
+class MiscellaneousView(APIView):
     
     def get(self, request, format=None):
         total = request.query_params.get('total',None)
-        if total == 'pd':
-            return Response(get_mdod(request))
+        if total == 'account':
+            context = {
+                'totalCustomerAcc':CustomUserRegistration.objects.filter(role='customer').count(),
+                'totalTechnicianAcc':CustomUserRegistration.objects.filter(role='technician').count()
+            }
+            return Response(context)
         return Response({})
 
 
