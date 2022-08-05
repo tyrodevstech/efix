@@ -57,12 +57,8 @@ class ServiceRequest(models.Model):
         ('Low', 'Low'),
     )
     STATUS_CHOICE = (
-        ('new','New'),
-        ('in_progress','In Progress'),
-        ('waittingoncustomer','Waitting on Customer'),
-        ('fixed','Fixed'),
-        ('closed','Closed'),
-        ('cancelled','Cancelled'),
+        ('Pending','Pending'),
+        ('Completed','Completed'),
     )
     customer = models.ForeignKey(CustomUserRegistration, on_delete=models.CASCADE, null=True,related_name='customerrs',blank=True)
     technician = models.ForeignKey(CustomUserRegistration, on_delete=models.SET_NULL, null=True,related_name='technicianrs',blank=True)
@@ -72,7 +68,7 @@ class ServiceRequest(models.Model):
     files = models.FileField(upload_to= 'service_file', null=True, blank=True)
     priority = models.CharField(max_length=122, choices=priority_choice, null=True)
     created_at = models.DateField(auto_now_add=True)
-    status =  models.CharField(max_length=122, choices=STATUS_CHOICE, null=True,blank=True,default='new')
+    status =  models.CharField(max_length=122, choices=STATUS_CHOICE, null=True,blank=True,default='Pending')
     
     def __str__(self):
         return f'{self.title}'
