@@ -28,8 +28,8 @@ class CustomUserRegistrationSerializer(ModelSerializer):
             if hasattr(self.instance,'phone'):
                 if value == self.instance.phone:
                     return value
-                elif CustomUserRegistration.objects.filter(phone__iexact=value).exists():
-                    raise ValidationError("This phone already exist!")
+            elif CustomUserRegistration.objects.filter(phone__iexact=value).exists() or User.objects.filter(username__iexact=value).exists():
+                raise ValidationError("This phone already exist!")
         return value
 
     def validate(self, data):
