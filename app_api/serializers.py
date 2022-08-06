@@ -35,8 +35,13 @@ class CustomUserRegistrationSerializer(ModelSerializer):
     def validate(self, data):
         validated_data = super().validate(data)
         if self.instance:
-            if not (self.instance.work_area or validated_data.get('work_area',None)) and validated_data.get('active',False):
+            submittedWork_area = validated_data.get('work_area',None)
+            if not (self.instance.work_area or submittedWork_area) and validated_data.get('active',False):
                 raise ValidationError("Please select work area first. ")
+            if submittedWork_area and self.instance.role == 'technician':
+                assignedTechnician = CustomUserRegistration.objects.filter(role='technician',work_area=submittedWork_area).exclude(pk=self.instance.pk)
+                if assignedTechnician.exists():
+                    raise ValidationError(f"Selected area already assigned to technician \'{assignedTechnician.first().name}\'.")
         return validated_data
 
     class Meta:

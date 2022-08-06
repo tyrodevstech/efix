@@ -8,6 +8,7 @@ from app_api.serializers import  *
 from rest_framework import filters
 from django.contrib.auth.models import User
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 from app_api.utils import notify_admins, send_push_message
 from core.custom_context_processor import get_mdod
@@ -51,7 +52,7 @@ class CustomUserRegistraionViewSet(ModelViewSet):
     queryset = CustomUserRegistration.objects.all()
     filter_backends = [filters.SearchFilter,DjangoFilterBackend]
     search_fields = ['name','role', 'user__id','phone','work_area__area_name','reg_no']
-    filterset_fields = ['work_area']
+    filterset_fields = ['work_area','user']
     def list(self, request):
         queryset = CustomUserRegistration.objects.filter().order_by('-id')
         role = request.query_params.get('role',None)
@@ -100,6 +101,7 @@ class AreaViewSet(ModelViewSet):
     search_fields = ['area_name',]
 
 class ServiceRequestViewSet(ModelViewSet):
+    parser_classes = (MultiPartParser,FormParser,JSONParser)
     serializer_class = ServiceRequestSerializer
     queryset = ServiceRequest.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
@@ -154,6 +156,7 @@ class ServiceRequestViewSet(ModelViewSet):
         return Response(serializer.data)
 
 class InvoiceViewSet(ModelViewSet):
+    parser_classes = (MultiPartParser,FormParser,JSONParser)
     serializer_class = InvoiceSerializer
     queryset = Invoice.objects.all().order_by('-id')
     filter_backends = [filters.SearchFilter,DjangoFilterBackend]
